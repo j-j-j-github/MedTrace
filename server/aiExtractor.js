@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -160,93 +160,30 @@ export async function extractWithGemini(buffer, mimeType) {
     );
   }
 
-  const modelName = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
-  console.log(`[Gemini AI] Initializing model: ${modelName} with MIME type: ${mimeType}`);
+  // Model cascade: try gemini-3.5-flash-lite first (fast, generous free tier), then gemini-3.6-flash
+  const preferredModel = process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
+  const candidateModels = [preferredModel, 'gemini-3.6-flash'].filter((v, i, a) => a.indexOf(v) === i);
+
+  const schema = {
+    type: SchemaType.OBJECT,
+    properties: {
+      isMedicalDocument: { type: SchemaType.BOOLEAN },
+      documentType: { type: SchemaType.STRING, enum: ["LAB_REPORT", "PRESCRIPTION", "IMAGING_REPORT", "DISCHARGE_SUMMARY", "CONSULTATION", "MEDICAL_CERTIFICATE", "OTHER"] },
+      hospital: { type: SchemaType.STRING, nullable: true },
+      doctor: { type: SchemaType.STRING, nullable: true },
+      department: { type: SchemaType.STRING, nullable: true },
+      date: { type: SchemaType.STRING, nullable: true },
+      patientName: { type: SchemaType.STRING, nullable: true },
+      summary: { type: SchemaType.STRING },
+      labResults: { type: SchemaType.ARRAY, items: { type: SchemaType.OBJECT, properties: { testName: { type: SchemaType.STRING }, value: { type: SchemaType.STRING }, unit: { type: SchemaType.STRING }, referenceRange: { type: SchemaType.STRING }, status: { type: SchemaType.STRING } } } },
+      medications: { type: SchemaType.ARRAY, items: { type: SchemaType.OBJECT, properties: { name: { type: SchemaType.STRING }, dosage: { type: SchemaType.STRING }, frequency: { type: SchemaType.STRING }, duration: { type: SchemaType.STRING }, instructions: { type: SchemaType.STRING } } } },
+      findings: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } }
+    },
+    required: ["isMedicalDocument", "documentType", "summary", "labResults", "medications", "findings"]
+  };
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({
-    model: modelName,
-    generationConfig: {
-      responseMimeType: 'application/json',
-      temperature: 0.1,
-    },
-  });
-
-  const prompt = `You are a clinical document AI specialist for "MedTrace", a patient medical record tracking system.
-Your goal is to inspect this medical document (PDF or image) and extract key medical data with extreme precision.
-
-CRITICAL EXTRACTION REQUIREMENTS:
-0. isMedicalDocument:
-   - Evaluate if the provided document or image is a legitimate medical-related document (e.g. lab report, prescription, medical bill, doctor's note, imaging report).
-   - If it is completely unrelated (e.g. a picture of a cat, a random receipt, a landscape photo, a blank page), set this strictly to boolean \`false\`.
-   - Otherwise, set it to boolean \`true\`.
-
-1. documentType:
-   Must be strictly one of these exact string values:
-   - "LAB_REPORT"
-   - "PRESCRIPTION"
-   - "IMAGING_REPORT"
-   - "DISCHARGE_SUMMARY"
-   - "CONSULTATION"
-   - "MEDICAL_CERTIFICATE"
-   - "OTHER"
-
-2. Null Safety:
-   - If a field is not explicitly mentioned in the document (such as hospital, doctor, department, patientName, date), you MUST return JSON null.
-   - NEVER output strings like "N/A", "Not specified", "Unknown", "Not found", or "None". Always return null.
-
-3. Date Formatting:
-   - Convert any dates found for the record into strict "YYYY-MM-DD" format (e.g. "2024-03-15").
-   - If no valid date is present, return null.
-
-4. Patient-Friendly Summary:
-   - Do NOT just summarize or regurgitate clinical jargon.
-   - Write a warm, compassionate, patient-friendly explanation in plain language explaining what the document means.
-   - If it is a lab report, explain what out-of-range or abnormal metrics mean in simple, easy-to-understand terms so the patient is informed without unnecessary alarm.
-
-5. Lab Results:
-   - Extract all laboratory tests, blood work, or diagnostic metrics into an array.
-   - Format: [ { "testName": "Hemoglobin", "value": "12.1", "unit": "g/dL", "referenceRange": "13-17", "status": "low" } ]
-   - If not a lab report, return empty array [].
-
-6. Medications:
-   - Extract all prescribed or recorded medications into an array.
-   - Format: [ { "name": "Amoxicillin", "dosage": "500mg", "frequency": "Twice daily", "duration": "5 days", "instructions": "Take after meals" } ]
-   - If no medications are mentioned, return empty array [].
-
-7. Findings:
-   - Extract any key findings, radiological impressions, diagnosis, or observations into an array.
-
-Return ONLY a JSON object matching this schema:
-{
-  "isMedicalDocument": boolean,
-  "documentType": "LAB_REPORT" | "PRESCRIPTION" | "IMAGING_REPORT" | "DISCHARGE_SUMMARY" | "CONSULTATION" | "MEDICAL_CERTIFICATE" | "OTHER",
-  "hospital": string | null,
-  "doctor": string | null,
-  "department": string | null,
-  "date": string | null,
-  "patientName": string | null,
-  "summary": string,
-  "labResults": [
-    {
-      "testName": string,
-      "value": string,
-      "unit": string,
-      "referenceRange": string,
-      "status": string
-    }
-  ],
-  "medications": [
-    {
-      "name": string,
-      "dosage": string,
-      "frequency": string,
-      "duration": string,
-      "instructions": string
-    }
-  ],
-  "findings": []
-}`;
+  const prompt = `Extract medical data from this document exactly matching the JSON schema. Use YYYY-MM-DD for dates. Write a warm patient-friendly summary. Return JSON null for missing fields.`;
 
   const documentPart = {
     inlineData: {
@@ -256,27 +193,36 @@ Return ONLY a JSON object matching this schema:
   };
 
   let responseText = '';
-  let maxRetries = 3;
-  let attempt = 0;
+  let lastError = null;
 
-  while (attempt < maxRetries) {
+  for (const currentModel of candidateModels) {
+    console.log(`[Gemini AI] Attempting extraction with model: ${currentModel} (MIME: ${mimeType})`);
     try {
+      const model = genAI.getGenerativeModel({
+        model: currentModel,
+        generationConfig: {
+          responseMimeType: 'application/json',
+          responseSchema: schema,
+          temperature: 0.1,
+        },
+      });
+
       const result = await model.generateContent([documentPart, prompt]);
       responseText = result.response.text();
-      console.log(`[Gemini AI] Received raw response from model on attempt ${attempt + 1}`);
+      console.log(`[Gemini AI] Successfully received response using ${currentModel}`);
       break;
     } catch (err) {
-      attempt++;
-      console.error(`[Gemini AI] Attempt ${attempt} failed:`, err.message);
-      if (attempt >= maxRetries) {
-        if (err.message.includes('503')) {
-          throw new Error('Google Gemini API is currently experiencing high demand (503). Please try uploading again in a few moments.');
-        }
-        throw err;
-      }
-      // Wait 2 seconds before retrying
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      console.error(`[Gemini AI] Model ${currentModel} failed:`, err.message);
+      lastError = err;
+      // Continue loop to try next model in candidate list
     }
+  }
+
+  if (!responseText) {
+    if (lastError && (lastError.message.includes('503') || lastError.message.includes('429'))) {
+      throw new Error(`Google Gemini API error (${lastError.message.includes('429') ? '429 Quota/Rate limit' : '503 High Demand'}). Please try again in a few moments.`);
+    }
+    throw lastError || new Error('Failed to extract document with Gemini AI');
   }
 
   let parsed;
