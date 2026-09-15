@@ -46,7 +46,7 @@ export function PageContainer() {
             {fabOpen && (
               <div className="flex flex-col items-end space-y-3 animate-fade-in">
                 <button
-                  onClick={() => { navigate('/upload?mode=camera'); setFabOpen(false); }}
+                  onClick={() => { navigate('/upload'); setFabOpen(false); }}
                   className="flex items-center gap-2 rounded-full bg-white/90 backdrop-blur-md px-4 py-2.5 text-sm font-medium text-slate-700 shadow-lg border border-slate-100 hover:bg-white hover:text-brand-600 transition-colors"
                 >
                   <span className="bg-slate-100 p-1.5 rounded-full"><Camera className="h-4 w-4" /></span>

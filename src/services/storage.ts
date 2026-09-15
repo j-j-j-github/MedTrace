@@ -21,9 +21,28 @@ export const storageService = {
   async getDocumentUrl(filePath: string): Promise<string> {
     const { data, error } = await supabase.storage
       .from('medical-records')
-      .createSignedUrl(filePath, 3600); // 1 hour expiry for temporary viewing
+      .createSignedUrl(filePath, 3600);
 
     if (error) throw error;
     return data.signedUrl;
+  },
+
+  async getDocumentUrls(filePaths: string[]): Promise<Record<string, string>> {
+    if (!filePaths || filePaths.length === 0) return {};
+    
+    const { data, error } = await supabase.storage
+      .from('medical-records')
+      .createSignedUrls(filePaths, 3600);
+
+    if (error) throw error;
+    
+    const urlMap: Record<string, string> = {};
+    data.forEach(item => {
+      if (item.path && item.signedUrl) {
+        urlMap[item.path] = item.signedUrl;
+      }
+    });
+    
+    return urlMap;
   }
 };

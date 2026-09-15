@@ -32,8 +32,9 @@ export default function Timeline() {
 
   // Group by year
   const groupedByYear = records.reduce((acc, record) => {
-    if (!record.record_date) return acc;
-    const year = new Date(record.record_date).getFullYear();
+    const dateToUse = record.record_date || record.created_at;
+    if (!dateToUse) return acc;
+    const year = new Date(dateToUse).getFullYear();
     if (!acc[year]) acc[year] = [];
     acc[year].push(record);
     return acc;
@@ -70,7 +71,7 @@ export default function Timeline() {
                 <h2 className="text-xl font-bold text-slate-900 pt-1">{year}</h2>
                 
                 {groupedByYear[year].map((record: any) => {
-                  const date = new Date(record.record_date);
+                  const date = new Date(record.record_date || record.created_at);
                   const monthName = date.toLocaleString('default', { month: 'long' });
                   const day = date.getDate();
                   

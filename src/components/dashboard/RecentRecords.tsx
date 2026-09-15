@@ -5,11 +5,13 @@ import { Card, CardHeader, CardTitle, CardContent } from '../common/Card';
 import { Button } from '../common/Button';
 import { recordService } from '../../services/records';
 import { storageService } from '../../services/storage';
+import { ConfirmModal } from '../common/ConfirmModal';
 
 export function RecentRecords() {
   const navigate = useNavigate();
   const [records, setRecords] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadRecords() {
@@ -22,16 +24,22 @@ export function RecentRecords() {
           return dateB - dateA;
         });
         
-        // Fetch signed URLs for all thumbnails
+        // Fetch signed URLs for all thumbnails in a single batch request
         const top5 = sorted.slice(0, 5);
-        const withThumbnails = await Promise.all(top5.map(async (record) => {
-          let thumbnail = null;
+        const filePaths = top5.map(r => r.file_path).filter(Boolean);
+        let urlMap: Record<string, string> = {};
+        
+        if (filePaths.length > 0) {
           try {
-            thumbnail = await storageService.getDocumentUrl(record.file_path);
+            urlMap = await storageService.getDocumentUrls(filePaths);
           } catch (e) {
-            console.error('Failed to get thumbnail', e);
+            console.error('Failed to batch fetch thumbnails', e);
           }
-          return { ...record, thumbnail };
+        }
+
+        const withThumbnails = top5.map((record) => ({
+          ...record,
+          thumbnail: record.file_path ? urlMap[record.file_path] || null : null
         }));
         
         setRecords(withThumbnails);
@@ -44,14 +52,20 @@ export function RecentRecords() {
     loadRecords();
   }, []);
 
-  async function handleDelete(e: React.MouseEvent, id: string) {
+  function handleDelete(e: React.MouseEvent, id: string) {
     e.stopPropagation();
-    if (window.confirm('Are you sure you want to delete this record?')) {
+    setRecordToDelete(id);
+  }
+
+  async function confirmDelete() {
+    if (recordToDelete) {
       try {
-        await recordService.deleteRecord(id);
-        setRecords(records.filter(r => r.id !== id));
+        await recordService.deleteRecord(recordToDelete);
+        setRecords(records.filter(r => r.id !== recordToDelete));
       } catch (error) {
         console.error(error);
+      } finally {
+        setRecordToDelete(null);
       }
     }
   }
@@ -137,6 +151,15 @@ export function RecentRecords() {
           </div>
         )}
       </CardContent>
+
+      <ConfirmModal 
+        isOpen={!!recordToDelete}
+        title="Delete Medical Record"
+        message="Are you sure you want to permanently delete this medical record? This action cannot be undone and the file will be removed from your database."
+        confirmText="Delete Record"
+        onConfirm={confirmDelete}
+        onCancel={() => setRecordToDelete(null)}
+      />
     </Card>
   );
 }

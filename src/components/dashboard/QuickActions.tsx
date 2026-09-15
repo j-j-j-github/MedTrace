@@ -24,7 +24,7 @@ export function QuickActions() {
         <Button 
           className="h-24 flex-col gap-2 bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200" 
           variant="ghost"
-          onClick={() => navigate('/upload?mode=camera')}
+          onClick={() => navigate('/upload')}
         >
           <Camera className="h-6 w-6" />
           <span>Scan Document</span>

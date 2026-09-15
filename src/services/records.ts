@@ -107,11 +107,34 @@ export const recordService = {
   },
   
   async deleteRecord(id: string) {
+    // 1. Get the record to find its file path before deleting
+    const { data: record } = await supabase
+      .from('medical_records')
+      .select('file_path')
+      .eq('id', id)
+      .single();
+
+    // 2. Delete child records to satisfy any potential foreign key constraints (fallback if no cascade)
+    await supabase.from('lab_results').delete().eq('record_id', id);
+    await supabase.from('medications').delete().eq('record_id', id);
+
+    // 3. Delete the medical record
     const { error } = await supabase
       .from('medical_records')
       .delete()
       .eq('id', id);
       
     if (error) throw error;
+
+    // 4. Delete the physical file from the storage bucket
+    if (record?.file_path) {
+      const { error: storageError } = await supabase.storage
+        .from('medical-records')
+        .remove([record.file_path]);
+        
+      if (storageError) {
+        console.error('Failed to delete file from storage:', storageError);
+      }
+    }
   }
 };

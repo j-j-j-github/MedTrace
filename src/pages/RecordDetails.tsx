@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Building2, Calendar, User as UserIcon, FileText, Download, Share2 } from 'lucide-react';
 import { recordService } from '../services/records';
 import { storageService } from '../services/storage';
+import { aiService } from '../services/ai';
 import { Button } from '../components/common/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/common/Card';
 import { ShareDialog } from '../components/sharing/ShareDialog';
@@ -14,6 +15,24 @@ export default function RecordDetails() {
   const [docUrl, setDocUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [showShareDialog, setShowShareDialog] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [retryError, setRetryError] = useState<string | null>(null);
+
+  const handleRetryAI = async () => {
+    if (!record || !record.id || !record.file_path) return;
+    setIsRetrying(true);
+    setRetryError(null);
+    try {
+      const aiResponse = await aiService.processMedicalDocument(record.id, record.file_path);
+      await recordService.saveAIProcessingResults(record.id, aiResponse);
+      const updatedRecord = await recordService.getRecordById(record.id);
+      setRecord(updatedRecord);
+    } catch (err: any) {
+      setRetryError(err.message || 'Failed to retry AI analysis.');
+    } finally {
+      setIsRetrying(false);
+    }
+  };
 
   useEffect(() => {
     const fetchRecordDetails = async () => {
@@ -94,12 +113,12 @@ export default function RecordDetails() {
           </CardContent>
         </Card>
 
-        {/* RIGHT PANEL: AI Understanding */}
+        {/* RIGHT PANEL: AI Analysis */}
         <div className="flex flex-col space-y-6 overflow-y-auto pr-2 pb-10">
           <Card>
             <CardHeader className="border-b border-slate-100 bg-brand-50 py-3">
               <CardTitle className="text-sm font-medium flex items-center text-brand-800">
-                AI Understanding
+                AI Analysis
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
@@ -131,6 +150,24 @@ export default function RecordDetails() {
                   </div>
                 )}
               </div>
+
+              {/* No AI Data Fallback */}
+              {!record.summary && !record.lab_results?.length && !record.medications?.length && (
+                <div className="flex flex-col items-center justify-center p-6 bg-slate-50 border border-slate-200 rounded-lg text-center space-y-3">
+                  <p className="text-sm text-slate-600">No AI analysis data found for this document.</p>
+                  {retryError && (
+                    <p className="text-xs text-red-600 bg-red-50 p-2 rounded w-full">{retryError}</p>
+                  )}
+                  <Button 
+                    onClick={handleRetryAI} 
+                    disabled={isRetrying}
+                    variant="outline"
+                    className="text-brand-600 border-brand-200 hover:bg-brand-50"
+                  >
+                    {isRetrying ? 'Analyzing...' : 'Try AI Analysis Again'}
+                  </Button>
+                </div>
+              )}
 
               {/* Summary */}
               {record.summary && (
