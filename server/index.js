@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { downloadDocument } from './supabaseClient.js';
 import { extractWithGemini } from './aiExtractor.js';
+import { analyzeHealthData } from './aiHealthAnalyzer.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '../.env'), override: true });
@@ -129,6 +130,24 @@ app.post('/process-document', async (req, res) => {
       recordId,
       filePath,
     });
+  }
+});
+
+/**
+ * Health analysis endpoint based on user profile and records
+ */
+app.post('/analyze-health', async (req, res) => {
+  const { profile, records } = req.body;
+  if (!profile || !records) {
+    return res.status(400).json({ error: 'Missing profile or records data' });
+  }
+
+  try {
+    const analysis = await analyzeHealthData(profile, records);
+    res.status(200).json(analysis);
+  } catch (error) {
+    console.error('[Analyze Health Error]', error);
+    res.status(500).json({ error: 'Health analysis failed', details: error.message });
   }
 });
 

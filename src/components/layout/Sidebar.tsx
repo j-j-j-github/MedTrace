@@ -1,11 +1,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, FileText, Clock, Share2, Upload } from 'lucide-react';
+import { LayoutDashboard, FileText, Clock, Share2, Upload, HeartPulse } from 'lucide-react';
 import { cn } from '../common/Button';
 
 export function Sidebar() {
   const navItems = [
     { name: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
+    { name: 'My Health', to: '/my-health', icon: HeartPulse },
     { name: 'Medical Records', to: '/records', icon: FileText },
     { name: 'Timeline', to: '/timeline', icon: Clock },
     { name: 'Shared Records', to: '/shared', icon: Share2 },

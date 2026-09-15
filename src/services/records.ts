@@ -28,18 +28,24 @@ export const recordService = {
 
   async saveAIProcessingResults(recordId: string, result: AIProcessingResponse) {
     // 1. Update the medical record
+    const updates: any = {
+      document_type: result.documentType,
+      hospital: result.hospital,
+      doctor: result.doctor,
+      department: result.department,
+      record_date: result.date,
+      patient_name: result.patientName,
+      summary: result.summary,
+      processing_status: 'COMPLETED'
+    };
+
+    if (result.title) {
+      updates.file_name = result.title;
+    }
+
     const { error: recordError } = await supabase
       .from('medical_records')
-      .update({
-        document_type: result.documentType,
-        hospital: result.hospital,
-        doctor: result.doctor,
-        department: result.department,
-        record_date: result.date,
-        patient_name: result.patientName,
-        summary: result.summary,
-        processing_status: 'COMPLETED'
-      })
+      .update(updates)
       .eq('id', recordId);
 
     if (recordError) throw recordError;

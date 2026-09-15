@@ -132,8 +132,11 @@ export function sanitizeAIResponse(raw) {
   // 6. Findings
   const findings = Array.isArray(raw.findings) ? raw.findings : [];
 
+  const title = String(raw.title || '').trim() || null;
+
   return {
     documentType,
+    title,
     hospital,
     doctor,
     department,
@@ -160,15 +163,22 @@ export async function extractWithGemini(buffer, mimeType) {
     );
   }
 
-  // Model cascade: try gemini-3.5-flash-lite first (fast, generous free tier), then gemini-3.6-flash
-  const preferredModel = process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
-  const candidateModels = [preferredModel, 'gemini-3.6-flash'].filter((v, i, a) => a.indexOf(v) === i);
+  // Model cascade: try preferred model first, then reliable fallbacks
+  const preferredModel = process.env.GEMINI_MODEL || 'gemini-3.5-flash';
+  const candidateModels = [
+    preferredModel,
+    'gemini-3.5-flash',
+    'gemini-3.5-flash-lite',
+    'gemini-3.7-flash',
+    'gemini-3.6-flash',
+  ].filter((v, i, a) => a.indexOf(v) === i);
 
   const schema = {
     type: SchemaType.OBJECT,
     properties: {
       isMedicalDocument: { type: SchemaType.BOOLEAN },
       documentType: { type: SchemaType.STRING, enum: ["LAB_REPORT", "PRESCRIPTION", "IMAGING_REPORT", "DISCHARGE_SUMMARY", "CONSULTATION", "MEDICAL_CERTIFICATE", "OTHER"] },
+      title: { type: SchemaType.STRING, description: "A concise, apt title for the document (e.g. 'Annual Blood Test', 'Dr. Smith Prescription')", nullable: true },
       hospital: { type: SchemaType.STRING, nullable: true },
       doctor: { type: SchemaType.STRING, nullable: true },
       department: { type: SchemaType.STRING, nullable: true },

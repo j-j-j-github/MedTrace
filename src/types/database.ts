@@ -18,6 +18,11 @@ export interface Database {
           user_id: string;
           full_name: string | null;
           email: string;
+          dob: string | null;
+          gender: string | null;
+          height: number | null;
+          weight: number | null;
+          preferred_unit: string | null;
           created_at: string;
         };
         Insert: {
@@ -25,6 +30,11 @@ export interface Database {
           user_id: string;
           full_name?: string | null;
           email: string;
+          dob?: string | null;
+          gender?: string | null;
+          height?: number | null;
+          weight?: number | null;
+          preferred_unit?: string | null;
           created_at?: string;
         };
         Update: {
@@ -32,6 +42,11 @@ export interface Database {
           user_id?: string;
           full_name?: string | null;
           email?: string;
+          dob?: string | null;
+          gender?: string | null;
+          height?: number | null;
+          weight?: number | null;
+          preferred_unit?: string | null;
           created_at?: string;
         };
       };

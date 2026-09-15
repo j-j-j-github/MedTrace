@@ -16,10 +16,12 @@ export function useProcessing() {
     
     setError(null);
     setStatus('Uploading...');
+    let currentRecordId: string | null = null;
 
     try {
       // 1. Upload to Supabase Storage
       const { filePath, recordId } = await storageService.uploadMedicalDocument(user.id, file);
+      currentRecordId = recordId;
 
       // 2. Create Initial Record
       setStatus('Processing...');
@@ -48,8 +50,19 @@ export function useProcessing() {
       
     } catch (err: any) {
       console.error('Processing error:', err);
-      setError(err.message || 'Unable to process this document. Please try again.');
+      const errorMessage = err.message || 'Unable to process this document. Please try again.';
+      setError(errorMessage);
       setStatus('error');
+      
+      // Auto-delete if identified as non-medical document
+      if (errorMessage.includes('not appear to be a valid medical document') && currentRecordId) {
+        try {
+          console.log('[useProcessing] Deleting non-medical record:', currentRecordId);
+          await recordService.deleteRecord(currentRecordId);
+        } catch (deleteErr) {
+          console.error('[useProcessing] Failed to auto-delete non-medical record:', deleteErr);
+        }
+      }
     }
   };
 

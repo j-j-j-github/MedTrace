@@ -5,6 +5,7 @@ type DocumentType = Database['public']['Tables']['medical_records']['Row']['docu
 
 export interface AIProcessingResponse {
   documentType: DocumentType;
+  title: string | null;
   hospital: string | null;
   doctor: string | null;
   department: string | null;
@@ -44,6 +45,25 @@ export const aiService = {
       const errorData = await response.json().catch(() => ({}));
       console.error('[AI Service] Error response:', errorData);
       throw new Error(errorData.error || 'AI Processing API returned an error');
+    }
+
+    return await response.json();
+  },
+
+  async analyzeHealth(profile: any, records: any[]): Promise<any> {
+    const aiApiUrl = import.meta.env.VITE_AI_API_URL || 'http://localhost:8000';
+    
+    console.log(`[AI Service] Triggering health analysis...`);
+    
+    const response = await fetch(`${aiApiUrl}/analyze-health`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ profile, records }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Failed to generate health analysis');
     }
 
     return await response.json();
