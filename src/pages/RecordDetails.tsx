@@ -36,14 +36,21 @@ export default function RecordDetails() {
   };
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    
     const fetchRecordDetails = async () => {
       if (!id) return;
       try {
         const data = await recordService.getRecordById(id);
         setRecord(data);
-        if (data.file_path) {
+        if (data.file_path && !docUrl) {
           const url = await storageService.getDocumentUrl(data.file_path);
           setDocUrl(url);
+        }
+        
+        // If still processing, poll again in 3 seconds
+        if (data.processing_status === 'PROCESSING') {
+          timeoutId = setTimeout(fetchRecordDetails, 3000);
         }
       } catch (error) {
         console.error('Error fetching record details:', error);
@@ -51,7 +58,12 @@ export default function RecordDetails() {
         setLoading(false);
       }
     };
+    
     fetchRecordDetails();
+    
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [id]);
 
   if (loading) {
@@ -162,18 +174,32 @@ export default function RecordDetails() {
               {/* No AI Data Fallback */}
               {!record.summary && !record.lab_results?.length && !record.medications?.length && (
                 <div className="flex flex-col items-center justify-center p-6 bg-slate-50 border border-slate-200 rounded-lg text-center space-y-3">
-                  <p className="text-sm text-slate-600">No AI analysis data found for this document.</p>
-                  {retryError && (
-                    <p className="text-xs text-red-600 bg-red-50 p-2 rounded w-full">{retryError}</p>
+                  {record.processing_status === 'PROCESSING' ? (
+                    <>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600 mb-2"></div>
+                      <p className="text-sm font-medium text-slate-900">AI is analyzing your document...</p>
+                      <p className="text-xs text-slate-500">This usually takes 10-15 seconds. Please wait.</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm text-slate-600">
+                        {record.processing_status === 'FAILED' 
+                          ? 'AI analysis failed for this document.' 
+                          : 'No AI analysis data found for this document.'}
+                      </p>
+                      {retryError && (
+                        <p className="text-xs text-red-600 bg-red-50 p-2 rounded w-full">{retryError}</p>
+                      )}
+                      <Button 
+                        onClick={handleRetryAI} 
+                        disabled={isRetrying}
+                        variant="outline"
+                        className="text-brand-600 border-brand-200 hover:bg-brand-50"
+                      >
+                        {isRetrying ? 'Analyzing...' : 'Try AI Analysis Again'}
+                      </Button>
+                    </>
                   )}
-                  <Button 
-                    onClick={handleRetryAI} 
-                    disabled={isRetrying}
-                    variant="outline"
-                    className="text-brand-600 border-brand-200 hover:bg-brand-50"
-                  >
-                    {isRetrying ? 'Analyzing...' : 'Try AI Analysis Again'}
-                  </Button>
                 </div>
               )}
 
