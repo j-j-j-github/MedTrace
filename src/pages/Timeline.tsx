@@ -59,7 +59,7 @@ export default function Timeline() {
           <Button onClick={() => navigate('/upload')}>Upload your first record</Button>
         </div>
       ) : (
-        <div className="relative border-l-2 border-slate-200 ml-4 md:ml-6 space-y-12">
+        <div className="relative border-l-2 border-slate-200 ml-10 md:ml-12 space-y-12">
           {years.map((year) => (
             <div key={year} className="relative">
               {/* Year Marker */}

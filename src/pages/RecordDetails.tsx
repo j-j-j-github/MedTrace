@@ -67,14 +67,14 @@ export default function RecordDetails() {
   }
 
   return (
-    <div className="h-[calc(100vh-8rem)] flex flex-col space-y-4">
+    <div className="flex flex-col space-y-4 lg:h-[calc(100vh-8rem)]">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Button variant="ghost" onClick={() => navigate('/records')} className="px-2">
             <ArrowLeft className="h-5 w-5 mr-2" />
-            Back to Records
+            <span className="hidden sm:inline">Back</span>
           </Button>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 line-clamp-1">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 line-clamp-1">
             {record.file_name}
           </h1>
         </div>
@@ -92,9 +92,9 @@ export default function RecordDetails() {
               </Button>
             </a>
           )}
-          <Button className="bg-brand-600 hover:bg-brand-700" onClick={() => setShowShareDialog(true)}>
-            <Share2 className="h-4 w-4 mr-2" />
-            Share Record
+          <Button className="bg-brand-600 hover:bg-brand-700 p-2 sm:px-4 sm:py-2" onClick={() => setShowShareDialog(true)}>
+            <Share2 className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Share Record</span>
           </Button>
         </div>
       </div>
@@ -103,9 +103,9 @@ export default function RecordDetails() {
         <ShareDialog record={record} onClose={() => setShowShareDialog(false)} />
       )}
 
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-0">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:min-h-0">
         {/* LEFT PANEL: Original Document */}
-        <Card className="flex flex-col overflow-hidden h-[500px] lg:h-full">
+        <Card className="flex flex-col overflow-hidden h-[60vh] lg:h-full min-h-[400px]">
           <CardHeader className="border-b border-slate-100 bg-slate-50 py-3">
             <CardTitle className="text-sm font-medium flex items-center text-slate-700">
               <FileText className="h-4 w-4 mr-2" />
