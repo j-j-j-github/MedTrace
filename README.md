@@ -2,6 +2,8 @@
 
 **MedTrace** is an AI-powered personal medical record management and secure sharing platform. Built as a fast, beautiful, and secure solution for patients to digitize their medical history, MedTrace uses AI to automatically extract, structure, and simplify complex medical documents.
 
+Live URL: https://medtrace-phi.vercel.app
+
 ## ✨ Features
 
 - **Smart Digitization:** Upload files (PDF/JPG/PNG) or directly scan physical documents using your mobile camera.
