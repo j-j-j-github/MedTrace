@@ -115,7 +115,7 @@ async def process_document(request: ProcessDocumentRequest):
     try:
         import google.generativeai as genai
         genai.configure(api_key=gemini_api_key)
-        model_name = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+        model_name = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
         model = genai.GenerativeModel(
             model_name=model_name,
             generation_config={"response_mime_type": "application/json", "temperature": 0.1}
