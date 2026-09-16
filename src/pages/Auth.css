@@ -447,14 +447,24 @@
   }
 
   .panel--text {
-    order: 2;
+    order: 1;
     text-align: center;
-    margin-top: 20px;
-    margin-bottom: 40px;
+    margin-top: 10px;
+    margin-bottom: 0px;
+  }
+
+  .brand {
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .copy p,
+  .features {
+    display: none;
   }
 
   .panel--auth {
-    order: 1;
+    order: 2;
     display: flex;
     justify-content: center;
   }
@@ -469,10 +479,6 @@
 
   .copy h1 {
     font-size: clamp(1.8rem, 5vw, 2.4rem);
-  }
-
-  .features li {
-    text-align: left;
   }
 }
 
