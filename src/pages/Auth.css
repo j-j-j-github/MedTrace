@@ -21,6 +21,10 @@
   position: relative;
 }
 
+.mobile-desc {
+  display: none;
+}
+
 .auth-root * {
   box-sizing: border-box;
 }
@@ -251,6 +255,9 @@
   position: relative;
   width: 100%;
   max-width: 380px;
+  display: grid;
+  grid-template-columns: 100%;
+  align-items: center;
 }
 
 /* No longer used, but kept to prevent errors if referenced anywhere else */
@@ -259,9 +266,7 @@
 }
 
 .auth-form {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%) translateX(20px);
+  grid-area: 1 / 1;
   width: 100%;
   padding: 0;
   background: transparent;
@@ -272,13 +277,14 @@
   justify-content: center;
   opacity: 0;
   pointer-events: none;
+  transform: translateX(20px);
   transition: opacity 0.4s ease, transform 0.45s ease;
 }
 
 .stage:not(.is-register) .form--login,
 .stage.is-register .form--register {
   opacity: 1;
-  transform: translateY(-50%) translateX(0);
+  transform: translateX(0);
   pointer-events: auto;
   transition-delay: 0.35s;
 }
@@ -421,50 +427,82 @@
    RESPONSIVE
 --------------------------------------------------------- */
 @media (max-width: 860px) {
+  .auth-root {
+    overflow-y: auto;
+  }
+
   .auth-scene {
-    padding: 32px 20px;
-    align-items: flex-start;
+    padding: 36px 20px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    width: 100%;
   }
 
   .stage {
+    position: static;
     height: auto;
-    min-height: 100vh;
+    min-height: auto;
     display: flex;
     flex-direction: column;
-    gap: 40px;
     align-items: center;
+    width: 100%;
+    max-width: 420px;
+    gap: 20px;
   }
 
   .panel {
-    position: relative;
+    position: static !important;
     width: 100% !important;
+    height: auto !important;
     transform: none !important;
-    padding: 0 16px !important;
-    transition: opacity 0.4s ease;
-    height: auto;
+    padding: 0 !important;
     background-color: transparent !important;
     box-shadow: none !important;
+    transition: none !important;
   }
 
   .panel--text {
     order: 1;
     text-align: center;
-    margin-top: 10px;
-    margin-bottom: 0px;
+    margin: 0;
+    width: 100%;
   }
 
   .brand {
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
+  }
+
+  .copy-stack {
+    display: grid;
+    grid-template-columns: 100%;
+    width: 100%;
+  }
+
+  .copy {
+    grid-area: 1 / 1;
+    transform: none !important;
+    transition: opacity 0.3s ease !important;
+    max-width: 100%;
+  }
+
+  .copy h1 {
+    font-size: clamp(1.6rem, 5.5vw, 2.1rem);
+    text-align: center;
+    margin: 0;
   }
 
   .copy p,
   .features {
-    display: none;
+    display: none !important;
   }
 
   .panel--auth {
     order: 2;
+    width: 100%;
     display: flex;
     justify-content: center;
   }
@@ -473,12 +511,67 @@
     background-color: #ffffff;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), var(--shadow-neu-flat);
     border-radius: 20px;
-    padding: 40px 24px;
-    min-height: 480px;
+    padding: 28px 22px;
+    width: 100%;
+    max-width: 100%;
+    position: relative;
+    z-index: 2;
   }
 
-  .copy h1 {
-    font-size: clamp(1.8rem, 5vw, 2.4rem);
+  .auth-form {
+    grid-area: 1 / 1;
+    width: 100%;
+    padding: 0 !important;
+    transform: none !important;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease !important;
+  }
+
+  .stage:not(.is-register) .form--login,
+  .stage.is-register .form--register {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: none !important;
+    transition-delay: 0s !important;
+  }
+
+  .auth-form h2 {
+    font-size: 1.55rem;
+  }
+
+  .auth-form .form__sub {
+    margin: 4px 0 16px;
+    font-size: 0.9rem;
+  }
+
+  .auth-form label {
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+  }
+
+  .auth-form input {
+    margin-top: 4px;
+    padding: 10px 14px;
+    font-size: 0.92rem;
+  }
+
+  .auth-btn {
+    margin-top: 6px;
+    padding: 11px 16px;
+  }
+
+  .mobile-desc {
+    order: 3;
+    display: block;
+    text-align: center;
+    font-size: 0.88rem;
+    color: var(--auth-ink-muted);
+    line-height: 1.55;
+    margin: 4px 0 0;
+    padding: 0 8px;
+    max-width: 380px;
+    width: 100%;
   }
 }
 

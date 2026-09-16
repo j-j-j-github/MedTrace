@@ -264,6 +264,11 @@ export default function AuthPage({ initialMode }: AuthPageProps) {
                 </form>
             </div>
           </section>
+
+          {/* Mobile-only footer description */}
+          <p className="mobile-desc">
+            Your entire medical history, instantly digitized and securely stored. Everything you need to track your health in one place.
+          </p>
         </div>
       </div>
     </div>
