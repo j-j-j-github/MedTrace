@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Plus, Camera, Upload } from 'lucide-react';
+import { Outlet, useLocation } from 'react-router-dom';
 
 export function PageContainer() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [fabOpen, setFabOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
 
   return (
     <div className="flex h-screen flex-col bg-slate-50 overflow-hidden">
@@ -41,33 +38,6 @@ export function PageContainer() {
             <Outlet />
           </div>
 
-          {/* Floating Action Button */}
-          <div className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-40 flex flex-col items-end space-y-3">
-            {fabOpen && (
-              <div className="flex flex-col items-end space-y-3 animate-fade-in">
-                <button
-                  onClick={() => { navigate('/upload'); setFabOpen(false); }}
-                  className="flex items-center gap-2 rounded-full bg-white/90 backdrop-blur-md px-4 py-2.5 text-sm font-medium text-slate-700 shadow-lg border border-slate-100 hover:bg-white hover:text-brand-600 transition-colors"
-                >
-                  <span className="bg-slate-100 p-1.5 rounded-full"><Camera className="h-4 w-4" /></span>
-                  Scan Document
-                </button>
-                <button
-                  onClick={() => { navigate('/upload?mode=file'); setFabOpen(false); }}
-                  className="flex items-center gap-2 rounded-full bg-white/90 backdrop-blur-md px-4 py-2.5 text-sm font-medium text-slate-700 shadow-lg border border-slate-100 hover:bg-white hover:text-brand-600 transition-colors"
-                >
-                  <span className="bg-slate-100 p-1.5 rounded-full"><Upload className="h-4 w-4" /></span>
-                  Upload File
-                </button>
-              </div>
-            )}
-            <button
-              onClick={() => setFabOpen(!fabOpen)}
-              className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-white shadow-[0_8px_30px_rgb(37,99,235,0.4)] hover:bg-brand-700 hover:shadow-[0_8px_30px_rgb(37,99,235,0.6)] transition-all duration-300"
-            >
-              <Plus className={`h-6 w-6 transition-transform duration-300 ${fabOpen ? 'rotate-45' : ''}`} />
-            </button>
-          </div>
         </main>
       </div>
     </div>

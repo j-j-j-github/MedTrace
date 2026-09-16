@@ -91,15 +91,27 @@ export function RecentRecords() {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {records.map((record) => (
               <div
                 key={record.id}
-                className="group relative flex flex-col rounded-2xl border border-slate-100 bg-white overflow-hidden transition-all shadow-md hover:border-brand-200 hover:shadow-2xl cursor-pointer animate-fade-in aspect-square"
+                className="group relative flex flex-col rounded-3xl bg-slate-50 overflow-hidden transition-all duration-300 shadow-[var(--shadow-neu-flat)] hover:shadow-[var(--shadow-neu-pressed)] hover:scale-[0.98] cursor-pointer animate-fade-in"
                 onClick={() => navigate(`/records/${record.id}`)}
               >
-                {/* Thumbnail Area */}
-                <div className="flex-1 bg-slate-100 relative overflow-hidden flex items-center justify-center">
+                {/* Header Area */}
+                <div className="flex items-center justify-between px-4 py-3 bg-transparent">
+                  <div className="flex items-center text-xs font-medium text-slate-500">
+                    <Calendar className="h-3.5 w-3.5 mr-1.5" />
+                    {new Date(record.record_date || record.created_at).toLocaleDateString()}
+                  </div>
+                  <div className="flex items-center text-[11px] font-semibold text-brand-700 bg-brand-50 px-2 py-1 rounded-md border border-brand-100/50">
+                    <Activity className="h-3 w-3 mr-1" />
+                    <span className="line-clamp-1 max-w-[120px]">{record.hospital || 'Provider'}</span>
+                  </div>
+                </div>
+
+                {/* Thumbnail Area (Landscape) */}
+                <div className="relative aspect-[4/3] sm:aspect-video md:aspect-[4/3] w-full bg-slate-100 overflow-hidden flex items-center justify-center group-hover:bg-slate-200 transition-colors">
                   {record.thumbnail ? (
                     record.file_type === 'application/pdf' ? (
                       <iframe 
@@ -108,42 +120,46 @@ export function RecentRecords() {
                         title={record.file_name}
                       />
                     ) : (
-                      <img src={record.thumbnail} alt={record.file_name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-slate-900/5">
+                        <img 
+                          src={record.thumbnail} 
+                          alt="" 
+                          aria-hidden="true"
+                          className="absolute inset-0 w-full h-full object-cover blur-xl opacity-30 scale-110" 
+                        />
+                        <img 
+                          src={record.thumbnail} 
+                          alt={record.file_name} 
+                          className="relative max-w-[90%] max-h-[90%] object-contain drop-shadow-md transition-transform duration-500 group-hover:scale-105" 
+                        />
+                      </div>
                     )
                   ) : (
-                    <div className="text-brand-300 transition-transform duration-500 group-hover:scale-110">
-                      <FileText className="h-10 w-10 opacity-50" />
+                    <div className="text-slate-300 transition-transform duration-500 group-hover:scale-110 group-hover:text-brand-300">
+                      <FileText className="h-12 w-12 opacity-50" />
                     </div>
                   )}
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-60"></div>
                   
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-brand-900/0 group-hover:bg-brand-900/5 transition-colors duration-300"></div>
+
                   {/* Delete Button */}
                   <button 
                     onClick={(e) => handleDelete(e, record.id)}
-                    className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-slate-600 hover:text-red-600 hover:bg-white transition-all opacity-0 group-hover:opacity-100 shadow-sm"
+                    className="absolute top-3 right-3 h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-slate-500 hover:text-red-600 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100 shadow-sm border border-slate-200"
                     title="Delete record"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
                 
-                {/* Info Area */}
-                <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
-                  <p className="font-semibold text-sm line-clamp-1 mb-0.5">{record.file_name || record.document_type || 'Document'}</p>
-                  <div className="flex items-center text-[10px] text-white/80 space-x-2">
-                    {record.hospital && (
-                      <span className="flex items-center gap-1">
-                        <Activity className="h-2.5 w-2.5" />
-                        <span className="line-clamp-1">{record.hospital}</span>
-                      </span>
-                    )}
-                    {!record.hospital && (
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-2.5 w-2.5" />
-                        {new Date(record.record_date || record.created_at).toLocaleDateString()}
-                      </span>
-                    )}
+                {/* Footer Area */}
+                <div className="px-4 py-3 bg-transparent">
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold text-sm text-slate-800 line-clamp-1 group-hover:text-brand-700 transition-colors">
+                      {record.file_name || record.document_type || 'Document'}
+                    </p>
+                    <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-brand-600 transition-colors shrink-0 ml-2" />
                   </div>
                 </div>
               </div>

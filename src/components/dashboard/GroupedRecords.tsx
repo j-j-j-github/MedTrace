@@ -54,10 +54,10 @@ export function GroupedRecords() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {Object.entries(groupedRecords).map(([hospital, records], index) => (
           <Card key={hospital} className={`animate-fade-in stagger-${(index % 5) + 1}`}>
-            <CardHeader className="pb-3 border-b border-slate-100 bg-slate-50/50 rounded-t-2xl">
+            <CardHeader className="pb-3 bg-transparent rounded-t-3xl">
               <CardTitle className="text-base text-slate-800 flex items-center justify-between">
                 <span className="line-clamp-1">{hospital}</span>
-                <span className="text-xs font-medium bg-white px-2 py-1 rounded-full text-slate-500 border border-slate-200">
+                <span className="text-xs font-medium bg-slate-50 px-3 py-1 rounded-full text-brand-700 shadow-[var(--shadow-neu-pressed)]">
                   {records.length}
                 </span>
               </CardTitle>
@@ -68,9 +68,9 @@ export function GroupedRecords() {
                   <div 
                     key={record.id}
                     onClick={() => navigate(`/records/${record.id}`)}
-                    className="group flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 cursor-pointer transition-colors"
+                    className="group flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-50 hover:shadow-[var(--shadow-neu-pressed)] cursor-pointer transition-all"
                   >
-                    <div className="p-2 rounded-lg bg-brand-50 text-brand-600 group-hover:bg-brand-100 transition-colors">
+                    <div className="p-2 rounded-xl bg-slate-50 shadow-[var(--shadow-neu-flat)] text-brand-600 transition-colors">
                       <FileText className="h-4 w-4" />
                     </div>
                     <div className="flex-1 min-w-0">

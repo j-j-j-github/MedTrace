@@ -50,8 +50,12 @@ export default function Records() {
     const q = searchQuery.toLowerCase();
     return (
       (record.file_name && record.file_name.toLowerCase().includes(q)) ||
+      (record.document_type && record.document_type.toLowerCase().includes(q)) ||
       (record.hospital && record.hospital.toLowerCase().includes(q)) ||
-      (record.document_type && record.document_type.toLowerCase().includes(q))
+      (record.doctor && record.doctor.toLowerCase().includes(q)) ||
+      (record.department && record.department.toLowerCase().includes(q)) ||
+      (record.patient_name && record.patient_name.toLowerCase().includes(q)) ||
+      (record.summary && record.summary.toLowerCase().includes(q))
     );
   }).sort((a, b) => {
     // 3. Sort logic
@@ -101,8 +105,8 @@ export default function Records() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
           <Input 
-            className="pl-10" 
-            placeholder="Search by hospital, document type, or name..." 
+            className="pl-10 rounded-full" 
+            placeholder="Search by hospital, doctor, summary..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

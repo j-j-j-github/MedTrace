@@ -5,6 +5,10 @@ import { aiService, AIProcessingResponse } from './ai';
 type MedicalRecordInsert = Database['public']['Tables']['medical_records']['Insert'];
 type ProcessingStatus = Database['public']['Tables']['medical_records']['Row']['processing_status'];
 
+let recordsCache: any[] | null = null;
+let recordsCacheTime: number = 0;
+const RECORDS_CACHE_TTL = 1000 * 60 * 5; // 5 minutes
+
 export const recordService = {
   async createInitialRecord(record: MedicalRecordInsert) {
     const { data, error } = await supabase
@@ -14,6 +18,7 @@ export const recordService = {
       .single();
 
     if (error) throw error;
+    recordsCache = null; // Invalidate cache
     return data;
   },
 
@@ -24,6 +29,7 @@ export const recordService = {
       .eq('id', id);
 
     if (error) throw error;
+    recordsCache = null; // Invalidate cache
   },
 
   async saveAIProcessingResults(recordId: string, result: AIProcessingResponse) {
@@ -85,15 +91,24 @@ export const recordService = {
         
       if (medError) throw medError;
     }
+    
+    recordsCache = null; // Invalidate cache
   },
   
-  async getRecords() {
+  async getRecords(forceRefresh: boolean = false) {
+    if (!forceRefresh && recordsCache && (Date.now() - recordsCacheTime < RECORDS_CACHE_TTL)) {
+      return recordsCache;
+    }
+
     const { data, error } = await supabase
       .from('medical_records')
       .select('*')
       .order('created_at', { ascending: false });
       
     if (error) throw error;
+    
+    recordsCache = data;
+    recordsCacheTime = Date.now();
     return data;
   },
   
@@ -142,5 +157,7 @@ export const recordService = {
         console.error('Failed to delete file from storage:', storageError);
       }
     }
+    
+    recordsCache = null; // Invalidate cache
   }
 };

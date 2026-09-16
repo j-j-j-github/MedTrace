@@ -6,11 +6,15 @@ interface StatCardProps {
   value: string | number;
   icon: React.ReactNode;
   description?: string;
+  onClick?: () => void;
 }
 
-export function StatCard({ title, value, icon, description }: StatCardProps) {
+export function StatCard({ title, value, icon, description, onClick }: StatCardProps) {
   return (
-    <Card>
+    <Card 
+      onClick={onClick} 
+      className={onClick ? "cursor-pointer transition-all hover:border-brand-200 hover:shadow-md active:scale-[0.98]" : ""}
+    >
       <CardContent className="p-6">
         <div className="flex items-center justify-between space-y-0 pb-2">
           <p className="tracking-tight text-sm font-medium text-slate-500">{title}</p>

@@ -16,10 +16,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const baseStyles = 'inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:pointer-events-none disabled:opacity-50';
     
     const variants = {
-      primary: 'bg-brand-600 text-white hover:bg-brand-700 shadow-sm',
-      secondary: 'bg-brand-100 text-brand-900 hover:bg-brand-200',
-      outline: 'border border-slate-200 bg-white hover:bg-slate-100 text-slate-900',
-      ghost: 'hover:bg-slate-100 hover:text-slate-900 text-slate-600',
+      primary: 'bg-brand-600 text-white shadow-[var(--shadow-neu-brand)] active:shadow-[var(--shadow-neu-brand-pressed)] hover:scale-[1.02] transition-all',
+      secondary: 'bg-slate-50 text-brand-700 shadow-[var(--shadow-neu-flat)] active:shadow-[var(--shadow-neu-pressed)] hover:text-brand-800 transition-all',
+      outline: 'bg-slate-50 text-slate-700 shadow-[var(--shadow-neu-flat)] active:shadow-[var(--shadow-neu-pressed)] transition-all',
+      ghost: 'bg-transparent text-slate-600 hover:shadow-[var(--shadow-neu-flat)] active:shadow-[var(--shadow-neu-pressed)] transition-all',
     };
 
     return (

@@ -5,6 +5,7 @@ import { sharingService } from '../services/sharing';
 import { storageService } from '../services/storage';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/common/Card';
 import { Button } from '../components/common/Button';
+import { DocumentViewer } from '../components/common/DocumentViewer';
 
 export default function PublicShare() {
   const { token } = useParams<{ token: string }>();
@@ -215,19 +216,23 @@ export default function PublicShare() {
                  Original Document
                </CardTitle>
              </CardHeader>
-             <CardContent className="p-0 flex-1 bg-slate-200/50">
-               {docUrl ? (
-                 <iframe src={docUrl} className="w-full h-full border-0" title="Document Preview" />
-               ) : (
-                 <div className="flex h-full items-center justify-center p-6 text-center text-slate-500 flex-col">
-                    <FileText className="h-12 w-12 text-slate-300 mb-4" />
-                    <p>Document preview requires authenticated access.</p>
-                    {shareData.allow_download && (
-                      <p className="text-sm mt-2">You can download the document using the button above.</p>
-                    )}
-                 </div>
-               )}
-             </CardContent>
+              <CardContent className="p-0 flex-1 bg-slate-900 overflow-hidden relative">
+                {docUrl ? (
+                  <DocumentViewer 
+                    url={docUrl} 
+                    fileType={shareData?.records?.file_type} 
+                    fileName={shareData?.records?.file_name || shareData?.records?.title} 
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center p-6 text-center text-slate-500 flex-col">
+                     <FileText className="h-12 w-12 text-slate-300 mb-4" />
+                     <p>Document preview requires authenticated access.</p>
+                     {shareData.allow_download && (
+                       <p className="text-sm mt-2">You can download the document using the button above.</p>
+                     )}
+                  </div>
+                )}
+              </CardContent>
           </Card>
         </div>
       </main>

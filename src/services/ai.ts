@@ -29,6 +29,9 @@ export interface AIProcessingResponse {
   findings: any[];
 }
 
+let healthAnalysisCache: { timestamp: number; data: any; profileId: string | undefined } | null = null;
+const CACHE_TTL = 1000 * 60 * 15; // 15 minutes
+
 export const aiService = {
   async processMedicalDocument(recordId: string, filePath: string): Promise<AIProcessingResponse> {
     const aiApiUrl = import.meta.env.VITE_AI_API_URL || 'http://localhost:8000';
@@ -50,7 +53,12 @@ export const aiService = {
     return await response.json();
   },
 
-  async analyzeHealth(profile: any, records: any[]): Promise<any> {
+  async analyzeHealth(profile: any, records: any[], forceRefresh: boolean = false): Promise<any> {
+    if (!forceRefresh && healthAnalysisCache && healthAnalysisCache.profileId === profile?.id && (Date.now() - healthAnalysisCache.timestamp < CACHE_TTL)) {
+      console.log('[AI Service] Returning cached health analysis');
+      return healthAnalysisCache.data;
+    }
+
     const aiApiUrl = import.meta.env.VITE_AI_API_URL || 'http://localhost:8000';
     
     console.log(`[AI Service] Triggering health analysis...`);
@@ -66,6 +74,8 @@ export const aiService = {
       throw new Error(errorData.error || 'Failed to generate health analysis');
     }
 
-    return await response.json();
+    const data = await response.json();
+    healthAnalysisCache = { timestamp: Date.now(), data, profileId: profile?.id };
+    return data;
   }
 };

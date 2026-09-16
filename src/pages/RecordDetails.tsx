@@ -7,6 +7,7 @@ import { aiService } from '../services/ai';
 import { Button } from '../components/common/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/common/Card';
 import { ShareDialog } from '../components/sharing/ShareDialog';
+import { DocumentViewer } from '../components/common/DocumentViewer';
 
 export default function RecordDetails() {
   const { id } = useParams<{ id: string }>();
@@ -78,10 +79,19 @@ export default function RecordDetails() {
           </h1>
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="outline" className="hidden sm:flex">
-            <Download className="h-4 w-4 mr-2" />
-            Download
-          </Button>
+          {docUrl && (
+            <a 
+              href={docUrl} 
+              download={record.file_name || 'medical-document'}
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <Button variant="outline" className="hidden sm:flex">
+                <Download className="h-4 w-4 mr-2" />
+                Download
+              </Button>
+            </a>
+          )}
           <Button className="bg-brand-600 hover:bg-brand-700" onClick={() => setShowShareDialog(true)}>
             <Share2 className="h-4 w-4 mr-2" />
             Share Record
@@ -102,14 +112,12 @@ export default function RecordDetails() {
               Original Document
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 p-0 bg-slate-100/50">
-            {docUrl ? (
-              <iframe src={docUrl} className="w-full h-full border-0" title="Document Preview" />
-            ) : (
-              <div className="flex h-full items-center justify-center text-slate-500">
-                Document preview not available
-              </div>
-            )}
+          <CardContent className="flex-1 p-0 bg-slate-900 overflow-hidden relative">
+            <DocumentViewer
+              url={docUrl}
+              fileType={record.file_type}
+              fileName={record.file_name || record.title}
+            />
           </CardContent>
         </Card>
 
