@@ -2,14 +2,15 @@
    MedTrace Auth Page Styles (Glass + Neumorphism + EKG Pulse)
 --------------------------------------------------------- */
 .auth-root {
-  --auth-bg: #F1F4F9;
-  --auth-shadow-light: #FFFFFF;
-  --auth-shadow-dark: #D9E1EC;
-  --auth-ink: #16213A;
-  --auth-ink-muted: #67728A;
-  --auth-card-bg: rgba(255, 255, 255, 0.7);
-  --auth-card-border: rgba(22, 33, 58, 0.08);
-  --auth-input-bg: #EEF1F7;
+  --auth-bg: #f8fafc; /* slate-50 */
+  --auth-shadow-light: #ffffff;
+  --auth-shadow-dark: #cbd5e1; /* slate-300 */
+  --auth-ink: #0f172a; /* slate-900 */
+  --auth-ink-muted: #64748b; /* slate-500 */
+  --auth-brand: #2563eb; /* brand-600 */
+  --auth-card-bg: transparent; /* No more glass card */
+  --auth-card-border: transparent;
+  --auth-input-bg: #f8fafc;
 
   min-height: 100vh;
   background: var(--auth-bg);
@@ -44,13 +45,13 @@
   display: flex;
   align-items: center;
   filter: blur(3px);
-  opacity: 0.22;
+  opacity: 0.28;
   pointer-events: none;
 }
 
 .pulse-track {
   width: 100%;
-  height: 260px;
+  height: 360px;
 }
 
 .pulse-track svg {
@@ -60,29 +61,29 @@
 
 .pulse-base {
   fill: none;
-  stroke: var(--auth-ink);
-  stroke-width: 4.5;
+  stroke: var(--auth-brand);
+  stroke-width: 12;
   stroke-linecap: round;
   stroke-linejoin: round;
-  opacity: 0.45;
+  opacity: 0.28;
 }
 
 .pulse-highlight {
   fill: none;
-  stroke: var(--auth-ink);
-  stroke-width: 4.5;
+  stroke: var(--auth-brand);
+  stroke-width: 12;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-dasharray: 150 850;
-  animation: travel-pulse 6s linear infinite;
+  stroke-dasharray: 450 2400; /* Broad, luminous heartbeat travel */
+  animation: travel-pulse 8s linear infinite;
 }
 
 @keyframes travel-pulse {
   from {
-    stroke-dashoffset: 0;
+    stroke-dashoffset: 2850;
   }
   to {
-    stroke-dashoffset: -1000;
+    stroke-dashoffset: -450;
   }
 }
 
@@ -101,33 +102,40 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 50%;
   height: 100%;
   display: flex;
   align-items: center;
-  transition: transform 0.85s cubic-bezier(0.65, 0, 0.35, 1);
+  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
   will-change: transform;
 }
 
 .panel--text {
+  width: 58%;
   transform: translateX(0%);
-  padding: 0 24px 0 88px;
+  padding: 0 48px;
+  justify-content: center;
+  background-color: transparent;
 }
 
 .panel--auth {
-  transform: translateX(100%);
-  padding: 0 88px 0 24px;
+  width: 42%;
+  transform: translateX(138.095%);
+  padding: 0 32px;
   justify-content: center;
+  background-color: #ffffff;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.03), var(--shadow-neu-flat);
+  z-index: 5;
 }
 
 .stage.is-register .panel--text {
-  transform: translateX(100%);
-  padding: 0 88px 0 24px;
+  transform: translateX(72.414%);
+  padding: 0 48px;
 }
 
 .stage.is-register .panel--auth {
   transform: translateX(0%);
-  padding: 0 24px 0 88px;
+  padding: 0 32px;
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.03), var(--shadow-neu-flat);
 }
 
 /* ---------------------------------------------------------
@@ -135,7 +143,7 @@
 --------------------------------------------------------- */
 .text-content {
   width: 100%;
-  max-width: 520px;
+  max-width: 560px;
 }
 
 .brand {
@@ -153,7 +161,7 @@
 
 .brand__mark path {
   fill: none;
-  stroke: var(--auth-ink);
+  stroke: url(#brandGradient);
   stroke-width: 2.4;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -161,9 +169,11 @@
 
 .brand__name {
   font-weight: 800;
-  font-size: 1.1rem;
+  font-size: 1.4rem;
   letter-spacing: -0.01em;
-  color: var(--auth-ink);
+  background: linear-gradient(135deg, var(--auth-brand), #60a5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .copy-stack {
@@ -176,7 +186,8 @@
   transform: translateY(10px);
   transition: opacity 0.4s ease, transform 0.45s ease;
   pointer-events: none;
-  max-width: 38ch;
+  width: 100%;
+  max-width: 520px;
 }
 
 .stage:not(.is-register) .copy--login,
@@ -188,20 +199,21 @@
 }
 
 .copy h1 {
-  font-size: clamp(1.5rem, 2.5vw, 2.05rem);
-  line-height: 1.25;
+  font-size: clamp(2.2rem, 3.5vw, 3.2rem);
+  line-height: 1.2;
   font-weight: 800;
   color: var(--auth-ink);
-  max-width: 15ch;
+  max-width: 100%;
   margin: 0;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.01em;
 }
 
 .copy p {
-  margin: 18px 0 22px;
+  margin: 20px 0 28px;
   color: var(--auth-ink-muted);
-  font-size: 0.98rem;
-  line-height: 1.6;
+  font-size: 1.15rem;
+  line-height: 1.65;
+  max-width: 52ch;
 }
 
 .features {
@@ -210,13 +222,13 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 13px;
+  gap: 12px;
 }
 
 .features li {
   position: relative;
-  padding-left: 26px;
-  font-size: 0.92rem;
+  padding-left: 22px;
+  font-size: 1rem;
   color: var(--auth-ink);
 }
 
@@ -224,60 +236,55 @@
   content: "";
   position: absolute;
   left: 0;
-  top: 5px;
-  width: 13px;
-  height: 13px;
+  top: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: var(--auth-ink);
-  opacity: 0.75;
+  background: var(--auth-brand);
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.45);
 }
 
 /* ---------------------------------------------------------
    AUTH CARD — Glass + Neumorphic inputs
 --------------------------------------------------------- */
-.auth-card {
+.auth-content {
   position: relative;
   width: 100%;
-  max-width: 400px;
+  max-width: 380px;
 }
 
+/* No longer used, but kept to prevent errors if referenced anywhere else */
 .card__face {
-  position: relative;
-  min-height: 486px;
-  height: 520px;
-  background: var(--auth-card-bg);
-  border: 1px solid var(--auth-card-border);
-  border-radius: 26px;
-  backdrop-filter: blur(22px) saturate(140%);
-  -webkit-backdrop-filter: blur(22px) saturate(140%);
-  box-shadow:
-    0 22px 46px rgba(0, 0, 0, 0.10),
-    0 6px 16px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  display: none;
 }
 
 .auth-form {
   position: absolute;
-  inset: 0;
-  padding: 34px 34px 28px;
+  top: 50%;
+  transform: translateY(-50%) translateX(20px);
+  width: 100%;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   justify-content: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.4s ease 0.1s;
-  overflow-y: auto;
+  transition: opacity 0.4s ease, transform 0.45s ease;
 }
 
 .stage:not(.is-register) .form--login,
 .stage.is-register .form--register {
   opacity: 1;
+  transform: translateY(-50%) translateX(0);
   pointer-events: auto;
-  transition-delay: 0.3s;
+  transition-delay: 0.35s;
 }
 
 .auth-form h2 {
-  font-size: 1.4rem;
+  font-size: 1.8rem;
   font-weight: 800;
   color: var(--auth-ink);
   margin: 0;
@@ -285,36 +292,34 @@
 }
 
 .auth-form .form__sub {
-  margin: 8px 0 20px;
+  margin: 4px 0 18px;
   color: var(--auth-ink-muted);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 400;
 }
 
 .auth-form label {
   display: block;
-  font-size: 0.8rem;
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--auth-ink-muted);
-  margin-bottom: 13px;
+  margin-bottom: 12px;
 }
 
 .auth-form input {
   display: block;
   width: 100%;
-  margin-top: 7px;
-  padding: 11px 14px;
+  margin-top: 6px;
+  padding: 11px 15px;
   font-family: inherit;
   font-size: 0.95rem;
   color: var(--auth-ink);
   background: var(--auth-input-bg);
-  border: none;
-  border-radius: 12px;
-  box-shadow:
-    inset 3px 3px 7px var(--auth-shadow-dark),
-    inset -3px -3px 7px var(--auth-shadow-light);
+  border: 1.5px solid transparent;
+  border-radius: 10px;
+  box-shadow: var(--shadow-neu-pressed);
   outline: none;
-  transition: box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .auth-form input::placeholder {
@@ -323,24 +328,23 @@
 }
 
 .auth-form input:focus {
-  box-shadow:
-    inset 2px 2px 5px var(--auth-shadow-dark),
-    inset -2px -2px 5px var(--auth-shadow-light),
-    0 0 0 2px var(--auth-ink);
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: inset 1px 2px 4px rgba(0, 0, 0, 0.04), 0 2px 10px rgba(15, 23, 42, 0.04);
 }
 
 .auth-btn {
-  margin-top: 6px;
-  padding: 12px 18px;
+  margin-top: 4px;
+  padding: 11px 16px;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   font-family: inherit;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.94rem;
   color: #ffffff;
   cursor: pointer;
-  background: var(--auth-ink);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
+  background: var(--auth-brand);
+  box-shadow: var(--shadow-neu-brand);
   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.2s ease;
   display: inline-flex;
   align-items: center;
@@ -370,9 +374,9 @@
 }
 
 .auth-switch {
-  margin: 18px 0 0;
+  margin: 14px 0 0;
   text-align: center;
-  font-size: 0.86rem;
+  font-size: 0.84rem;
   color: var(--auth-ink-muted);
 }
 

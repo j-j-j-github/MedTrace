@@ -71,30 +71,36 @@ export default function AuthPage({ initialMode }: AuthPageProps) {
   return (
     <div className="auth-root">
       <div className="auth-scene">
-        {/* Animated Lifeline EKG background */}
-        <div className="pulse-bg" aria-hidden="true">
-          <div className="pulse-track">
-            <svg viewBox="0 0 1800 200" preserveAspectRatio="none">
-              <path
-                className="pulse-base"
-                d="M0,100 L140,100 L165,30 L195,170 L225,60 L255,100 L420,100 L445,30 L475,170 L505,60 L535,100 L700,100 L725,30 L755,170 L785,60 L815,100 L900,100 L1040,100 L1065,30 L1095,170 L1125,60 L1155,100 L1320,100 L1345,30 L1375,170 L1405,60 L1435,100 L1600,100 L1625,30 L1655,170 L1685,60 L1715,100 L1800,100"
-              />
-              <path
-                className="pulse-highlight"
-                pathLength="1000"
-                d="M0,100 L140,100 L165,30 L195,170 L225,60 L255,100 L420,100 L445,30 L475,170 L505,60 L535,100 L700,100 L725,30 L755,170 L785,60 L815,100 L900,100 L1040,100 L1065,30 L1095,170 L1125,60 L1155,100 L1320,100 L1345,30 L1375,170 L1405,60 L1435,100 L1600,100 L1625,30 L1655,170 L1685,60 L1715,100 L1800,100"
-              />
-            </svg>
-          </div>
-        </div>
-
         {/* Sliding stage container */}
         <div className={`stage ${isRegister ? 'is-register' : ''}`} id="stage">
           {/* TEXT PANEL */}
           <section className="panel panel--text">
+            {/* Animated Lifeline EKG background - 3 large spaced nodes */}
+            <div className="pulse-bg" aria-hidden="true">
+              <div className="pulse-track">
+                <svg viewBox="0 0 1800 300" preserveAspectRatio="none">
+                  <path
+                    className="pulse-base"
+                    d="M0,150 L180,150 L220,120 L250,150 L280,165 L325,25 L375,270 L410,150 L450,110 L490,150 L760,150 L800,120 L830,150 L860,165 L905,25 L955,270 L990,150 L1030,110 L1070,150 L1340,150 L1380,120 L1410,150 L1440,165 L1485,25 L1535,270 L1570,150 L1610,110 L1650,150 L1800,150"
+                  />
+                  <path
+                    className="pulse-highlight"
+                    pathLength="2400"
+                    d="M0,150 L180,150 L220,120 L250,150 L280,165 L325,25 L375,270 L410,150 L450,110 L490,150 L760,150 L800,120 L830,150 L860,165 L905,25 L955,270 L990,150 L1030,110 L1070,150 L1340,150 L1380,120 L1410,150 L1440,165 L1485,25 L1535,270 L1570,150 L1610,110 L1650,150 L1800,150"
+                  />
+                </svg>
+              </div>
+            </div>
+
             <div className="text-content">
               <div className="brand">
                 <svg className="brand__mark" viewBox="0 0 24 24">
+                  <defs>
+                    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#2563eb" />
+                      <stop offset="100%" stopColor="#3b82f6" />
+                    </linearGradient>
+                  </defs>
                   <path d="M3 12h4l2 6 4-14 2 8h6" />
                 </svg>
                 <span className="brand__name">MedTrace</span>
@@ -102,28 +108,27 @@ export default function AuthPage({ initialMode }: AuthPageProps) {
 
               <div className="copy-stack">
                 <div className="copy copy--login" data-copy="login">
-                  <h1>Every appointment, prescription, and result — kept in one place.</h1>
+                  <h1>Welcome to MedTrace.</h1>
                   <p>
-                    Sign in to pick up where you left off. Your records stay private,
-                    organized, and yours.
+                    Your entire medical history, instantly digitized, parsed by AI, and securely stored. 
+                    Everything you need to track your health in one beautiful place.
                   </p>
                   <ul className="features">
-                    <li>Timeline of every visit, synced automatically</li>
-                    <li>Share records with a doctor in one tap</li>
-                    <li>Encrypted end-to-end, always</li>
+                    <li>AI-powered record parsing</li>
+                    <li>Premium dashboard with health metrics</li>
+                    <li>Secure end-to-end encryption</li>
                   </ul>
                 </div>
 
                 <div className="copy copy--register" data-copy="register">
-                  <h1>Start keeping a real record of your health.</h1>
+                  <h1>Join MedTrace today.</h1>
                   <p>
-                    One account holds your entire history — no digging through folders
-                    or asking the front desk to fax anything.
+                    Stop digging through file cabinets. Digitize your records, get actionable AI insights, and take absolute control of your health journey.
                   </p>
                   <ul className="features">
-                    <li>Free to start, no card required</li>
-                    <li>Import past records anytime</li>
-                    <li>You control who sees what</li>
+                    <li>Batch upload and instant analysis</li>
+                    <li>Intelligent search and categorization</li>
+                    <li>Free to get started</li>
                   </ul>
                 </div>
               </div>
@@ -132,16 +137,15 @@ export default function AuthPage({ initialMode }: AuthPageProps) {
 
           {/* AUTH PANEL */}
           <section className="panel panel--auth">
-            <div className="auth-card">
-              <div className="card__face">
-                {/* LOGIN FORM */}
+            <div className="auth-content">
+              {/* LOGIN FORM */}
                 <form
                   className="auth-form form--login"
                   data-form="login"
                   onSubmit={handleLoginSubmit}
                   noValidate
                 >
-                  <h2>Welcome back</h2>
+                  <h2>Access your vault</h2>
                   <p className="form__sub">Sign in to your MedTrace account</p>
 
                   {loginError && <div className="auth-error-badge">{loginError}</div>}
@@ -258,7 +262,6 @@ export default function AuthPage({ initialMode }: AuthPageProps) {
                     </button>
                   </p>
                 </form>
-              </div>
             </div>
           </section>
         </div>

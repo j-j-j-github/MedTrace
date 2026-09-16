@@ -4,8 +4,7 @@ import { AuthProvider } from './hooks/useAuth';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
 
 // Pages
-import Login from './pages/Login';
-import Signup from './pages/Signup';
+import AuthPage from './pages/AuthPage';
 import Dashboard from './pages/Dashboard';
 import { PageContainer } from './components/layout/PageContainer';
 
@@ -25,8 +24,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="/signup" element={<AuthPage />} />
           <Route path="/share/:token" element={<PublicShare />} />
           
           {/* Protected Routes */}
