@@ -422,32 +422,35 @@
 --------------------------------------------------------- */
 @media (max-width: 860px) {
   .auth-scene {
-    padding: 24px 16px;
+    padding: 32px 20px;
     align-items: flex-start;
   }
 
   .stage {
     height: auto;
-    min-height: auto;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: 40px;
     align-items: center;
   }
 
   .panel {
     position: relative;
-    width: 100%;
+    width: 100% !important;
     transform: none !important;
-    padding: 0 !important;
+    padding: 0 16px !important;
     transition: opacity 0.4s ease;
     height: auto;
+    background-color: transparent !important;
+    box-shadow: none !important;
   }
 
   .panel--text {
     order: 2;
-    text-align: left;
-    margin-top: 10px;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 40px;
   }
 
   .panel--auth {
@@ -456,12 +459,20 @@
     justify-content: center;
   }
 
-  .auth-card {
-    max-width: 420px;
+  .auth-content {
+    background-color: #ffffff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), var(--shadow-neu-flat);
+    border-radius: 20px;
+    padding: 40px 24px;
+    min-height: 480px;
   }
-  
-  .card__face {
-    height: 520px;
+
+  .copy h1 {
+    font-size: clamp(1.8rem, 5vw, 2.4rem);
+  }
+
+  .features li {
+    text-align: left;
   }
 }
 
