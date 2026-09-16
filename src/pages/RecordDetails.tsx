@@ -36,7 +36,7 @@ export default function RecordDetails() {
   };
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: ReturnType<typeof setTimeout>;
     
     const fetchRecordDetails = async () => {
       if (!id) return;
